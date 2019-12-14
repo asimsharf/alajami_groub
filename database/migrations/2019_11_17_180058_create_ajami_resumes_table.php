@@ -15,9 +15,15 @@ class CreateAjamiResumesTable extends Migration
     {
         Schema::create('ajami_resumes', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('title');
+            $table->string('name');
+            $table->string('phone');
+            $table->string('email');
+            $table->string('fb_link');
+            $table->string('tw_link');
+            $table->string('linkin');
+            
             $table->text('short_intro');
-            $table->longText('full_intro');
+            $table->string('image')->nullable();
             $table->text('educational_life');
             $table->text('life_mission');
             $table->text('life_vision');

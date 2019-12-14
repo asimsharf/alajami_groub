@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\AjamiResume;
+use App\Model\AjamiResume;
 use Illuminate\Http\Request;
 
 class AjamiResumeController extends Controller
@@ -14,7 +14,9 @@ class AjamiResumeController extends Controller
      */
     public function index()
     {
-        //
+        $resums=AjamiResume::all();
+      
+        return view('multiauth::admin.cpanel_forms.show_resume',compact('resums'));
     }
 
     /**
@@ -24,7 +26,7 @@ class AjamiResumeController extends Controller
      */
     public function create()
     {
-        //
+        return view('multiauth::admin.cpanel_forms.update_resume');
     }
 
     /**
@@ -35,7 +37,50 @@ class AjamiResumeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validatedData = $request->validate([
+            'name' => ['required', 'max:255'],
+            'fb_link' => ['required', 'max:255'],
+            'phone' => ['required'],
+            'email' => ['required','email'],
+            'short_intro' => ['required'],
+            'tw_link'=> ['required'],
+            'linkin'=> ['required'],
+            'educational_life'=> ['required'],
+            'life_mission'=> ['required'],
+            'life_vision'=> ['required'],
+          
+        ],
+        $messages = [
+            'name.required' => 'يجب ادخال الاسم ',
+            'fb_link.required' => 'يجب ادخال حساب  فيسبوك ',
+            'tw_link.required' => 'يجب ادخال حساب  تويتر ',
+            'linkin.required' => 'يجب ادخال حساب  موقع ذو صله ',
+            'phone.required' => 'يجب ادخال رقم الهاتف',
+            'email.required' => 'يجب ادخال البريد الاكتروني ',
+            'short_intro.required' => 'يجب ادخال نبذه عن ',
+            'educational_life.required'=> 'ادخل نبذه عن الحياة التعلميه',
+            'life_mission.required'=> 'ادخل الرؤيه',
+            'life_vision.required'=> 'ادخل الرساله',
+        ]
+        );
+        
+        $cv=AjamiResume::firstOrNew(array(
+            'id'=>1
+        ));
+        
+        if($file=$request->file('image')){
+            $name=$file->getClientOriginalName();
+            $file->move('upload',$name);
+            $cv->image = 'upload/'.$name ;  
+           
+        }
+        $cv->fill($validatedData);
+    
+        $save=$cv->save();
+        if( $save){
+            return redirect('/show_resume')->with('success', 'تمت عمليه الإضافه بنجاح');
+        }
+
     }
 
     /**
@@ -46,7 +91,7 @@ class AjamiResumeController extends Controller
      */
     public function show(AjamiResume $ajamiResume)
     {
-        return view('multiauth::admin.cpanel_forms.show_resume');
+      
     }
 
     /**
@@ -57,7 +102,7 @@ class AjamiResumeController extends Controller
      */
     public function edit(AjamiResume $ajamiResume)
     {
-
+      //
     }
 
     /**
@@ -69,7 +114,7 @@ class AjamiResumeController extends Controller
      */
     public function update(Request $request, AjamiResume $ajamiResume)
     {
-        return view('multiauth::admin.cpanel_forms.update_resume');
+       //
     }
 
     /**
@@ -80,6 +125,11 @@ class AjamiResumeController extends Controller
      */
     public function destroy(AjamiResume $ajamiResume)
     {
-        //
+        $delete=$ajamiResume->delete();
+        if($delete){
+
+            return redirect('/show_resume')->with('success', 'تمت عمليه الحذف بنجاح');
+
+        }
     }
 }

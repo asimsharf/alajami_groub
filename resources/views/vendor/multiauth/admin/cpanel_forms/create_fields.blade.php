@@ -1,75 +1,117 @@
 @extends('multiauth::layouts.admin_layout')
 @section('content')
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />  
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<style>
+    .dropdown-submenu {
+      position: relative;
+    }
+
+    .dropdown-submenu .dropdown-menu {
+      top: 0;
+      left: 100%;
+      margin-top: -1px;
+    }
+</style>
+</head>
 <section class="content-header">
   <h1>
- مجالات العمل
+     مجالات العمل
   </h1>
   <ol class="breadcrumb">
     <li><a href="/dashboard"><i class="fa fa-dashboard"></i> الصفحة الرئيسية</a></li>
-    <li><a href="#"> المجالات</a></li>
-    <li class="active">إضافة  </li>
   </ol>
 </section>
+<?php
+$message = Session::get('message');
+if ($message)
+{
+  echo'<div class="alert alert-success alert-dismissible">
+  <button type="button" class="close" data-dismiss="alert" aria-lobl="close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+  '.$message.'
+</div>';
+    Session::put('message', null);
+}
+?>
 
-
-<!-- Main content -->
 <section class="content">
 
 <div class="box box-info">
 <div class="box-header with-border">
-  <h3 class="box-title">إضافة مجال جديد</h3>
+  <h3 class="box-title">إضافة مجالات عمل </h3>
 
   <div class="box-tools pull-right">
     <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-    <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
   </div>
 </div><!-- /.box-header -->
 
-<div class="box-body">
-
-<form role="form" action="{{ url('/save-product') }}" enctype="multipart/form-data" method="post">
-        {{ csrf_field() }}
-    <div class="box-body">
-
-        <div class="form-group col-md-4">
-          <label for="en_name">إسم مجال العمل</label>
-          <input class="form-control" placeholder="إسم مجال العمل..." type="text" name="name" maxlength="30" required>
-        </div>
-
-
-
-        <div class="form-group col-md-4">
-            <label for="ar_name">نبذه عن المجال</label>
-            <input class="form-control" placeholder="وصف مجال العمل..." type="text" name="decription" maxlength="30" required>
-          </div>
-
-
-
-            <div class="form-group col-md-1">
-              <label> صورة المجال</label>
-              <input type="file" class="form-control input_file_choose"  id="input_file_choose" name="logo" required />
+<div class="box-body">  
+<div  style=" width: -webkit-fill-available;"> 
+    <form action="{{ url('/save_catogry') }}" method="POST">
+        @csrf
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
             </div>
-
-
-
-            <div class="form-group col-md-3">
-                 <img id="input_image_selected_show" border="0" width="100%" height="200px" src="{{URL('backend/dist/img/person.jpg')}}" />
-            </div>
-
-
-
-    </div>
-
-      <div class="box-footer">
-         <button type="submit" class="btn btn-primary">إضافة </button>
-      </div>
-
-</form>
-
+        @endif
+   
+       
+   
+        <table class="table table-bordered" id="dynamicTable" style="">  
+            <tr>
+                <th style="text-align:right">الاسم</th>
+               
+               
+                
+                  
+            </tr>
+            <tr>  
+                <td><input type="text" name="addmore[0][name]" placeholder="الاسم" class="form-control" /></td> 
+            
+               
+                <td><button type="button" name="add" id="add" class="btn btn-success">مجال اخر</button></td>  
+            </tr>  
+        </table> 
+    
+        <button type="submit" class="btn btn-primary">إضافه</button>
+    </form>
 </div>
-</div>
+   
+<script type="text/javascript">
+   
+    var i = 0;
+       
+    $("#add").click(function(){
+   
+        ++i;
+   
+        $("#dynamicTable").append('<tr><td><input type="text" name="addmore['+i+'][name]" placeholder="الاسم" class="form-control" /></td>  <td><button type="button" class="btn btn-danger remove-tr">إزاله</button></td></tr>');
+    });
+   
+    $(document).on('click', '.remove-tr', function(){  
+         $(this).parents('tr').remove();
+    });  
+    $(document).ready(function(){
+  $('.dropdown-submenu a.test').on("click", function(e){
+    $(this).next('ul').toggle();
+    e.stopPropagation();
+    e.preventDefault();
+  });
+});
+</script>
+  
 
 </section>
-
 
 @endsection

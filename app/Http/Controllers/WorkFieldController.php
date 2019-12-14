@@ -14,7 +14,8 @@ class WorkFieldController extends Controller
      */
     public function index()
     {
-        //
+        $fields=WorkField::all();
+        return view('multiauth::admin.cpanel_forms.show_fields',compact('fields'));
     }
 
     /**
@@ -35,7 +36,18 @@ class WorkFieldController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        
+            $request->validate([
+                'addmore.*.name' =>'required |min:3'
+            ]);
+            foreach ($request->addmore as $key => $value) {
+                $catogry=new WorkField(); 
+                $catogry->fill($value);  
+                $catogry->save();
+               
+            }
+            return redirect('/show_fields')->with('success', 'تمت إضافه المجالات بنجاح.');
+        
     }
 
     /**
@@ -80,6 +92,10 @@ class WorkFieldController extends Controller
      */
     public function destroy(WorkField $workField)
     {
-        //
+        $delete=$workField->delete();
+         if( $delete){
+            return redirect('/show_fields')->with('success', 'تمت حذف المجال بنجاح.');
+
+         }else return 404;
     }
 }

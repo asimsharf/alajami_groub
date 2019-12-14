@@ -2,9 +2,13 @@
 
 namespace App\Model;
 
+use App\Company;
 use Illuminate\Database\Eloquent\Model;
 
 class Branch extends Model
 {
-    //
+    protected $guarded=[];
+    public function company(){
+        return $this->belongsTo(Company::class);
+    }
 }

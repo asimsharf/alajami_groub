@@ -16,7 +16,7 @@ class CreateWorkFieldsTable extends Migration
         Schema::create('work_fields', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
-            $table->text('summary');
+           
             $table->timestamps();
         });
     }

@@ -10,7 +10,7 @@ class WorkField extends Model
     public function images(){
         return $this->hasMany(Image::class);
     }
-    public function company(){
-        return $this->belongsTo(Company::class);
+    public function companies(){
+        return $this->belongsToMany(Company::class);
     }
 }

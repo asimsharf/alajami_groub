@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Company;
+use App\Model\Branch;
 use Illuminate\Http\Request;
 
 class CompanyController extends Controller
@@ -14,7 +15,8 @@ class CompanyController extends Controller
      */
     public function index()
     {
-        //
+        $companies=Company::all();
+        return view('multiauth::admin.cpanel_forms.show_company',compact('companies'));
     }
 
     /**
@@ -35,7 +37,47 @@ class CompanyController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validatedData = $request->validate([
+            'name' => ['required', 'max:255'],
+            'address' => ['required', 'max:255'],
+            'phone' => ['required'],
+            'email' => ['required','email'],
+            'short_intro' => ['required'],
+            'publication_status'=> ['required'],
+          
+        ],
+        $messages = [
+            'name.required' => 'يجب ادخال اسم الشركه',
+            'address.required' => 'يجب ادخال اسم عنوان الشركه',
+            'phone.required' => 'يجب ادخال رقم الهاتف',
+            'email.required' => 'يجب ادخال البريد الاكتروني للشركه',
+            'short_intro.required' => 'يجب ادخال نبذه عن الشركه',
+        ]
+        );
+        $company=new Company();
+        $company->company_url=$request->company_url;
+        // $filename=$request->file('logo');
+       
+        if($file=$request->file('logo')){
+           
+            $name=$file->getClientOriginalName();
+            $file->move('upload',$name);
+            $company->logo = 'upload/'.$name ;  
+           
+        }
+        if($file=$request->file('profile')){
+            
+            $name=$file->getClientOriginalName();
+            $file->move('upload',$name);
+            $company->profile = 'upload/'.$name ;  
+           
+        }
+        $company->fill($validatedData);
+       
+        $save=$company->save();
+        if( $save) {
+            return redirect('/show_company')->with('success', 'تمت عمليه الإضافه بنجاح');
+        }
     }
 
     /**
@@ -46,7 +88,7 @@ class CompanyController extends Controller
      */
     public function show(Company $company)
     {
-        return view('multiauth::admin.cpanel_forms.show_company');
+      //
     }
 
     /**
@@ -57,7 +99,7 @@ class CompanyController extends Controller
      */
     public function edit(Company $company)
     {
-        //
+        return view('multiauth::admin.cpanel_forms.edit_company',compact('company'));
     }
 
     /**
@@ -69,7 +111,13 @@ class CompanyController extends Controller
      */
     public function update(Request $request, Company $company)
     {
-        //
+        $update=$company->update($request->all());
+        if( $update){
+            return redirect('/show_company')->with('success', 'تمت عمليه التعديل بنجاح');
+        }else{
+            return 404;
+        }
+
     }
 
     /**
@@ -80,6 +128,12 @@ class CompanyController extends Controller
      */
     public function destroy(Company $company)
     {
-        //
+        Branch::where('company_id',$company->id)->delete();
+        $delete= $company->delete();
+        if( $delete){
+            return redirect('/show_company')->with('success', 'تمت عمليه الحذف بنجاح');
+        }else{
+            return 404;
+        }
     }
 }
