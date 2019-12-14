@@ -2,7 +2,7 @@
 
 namespace App\Model;
 
-use App\Company;
+use App\Model\Company;
 use Illuminate\Database\Eloquent\Model;
 
 class Branch extends Model

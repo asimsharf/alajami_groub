@@ -67,7 +67,11 @@ Route::GET('/show_services', 'ServiceController@show')->name('admin.cpanel_forms
 
 
 Route::GET('/create_branch', 'BranchController@create')->name('admin.cpanel_forms.create_branch');
-Route::GET('/show_branch', 'BranchController@show')->name('admin.cpanel_forms.show_branch');
+Route::POST('/save_branch','BranchController@store');
+Route::GET('/edit-branch/{branch}','BranchController@edit');
+Route::PATCH('/update_branch/{branch}','BranchController@update');
+Route::DELETE('/delete-branch/{branch}','BranchController@destroy');
+Route::GET('/show_branch', 'BranchController@index')->name('admin.cpanel_forms.show_branch');
 
 
 Route::GET('/update_setting', 'SettingController@update')->name('admin.cpanel_forms.update_setting');

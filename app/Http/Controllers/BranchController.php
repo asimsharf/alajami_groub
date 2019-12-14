@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Model\Branch;
+use App\Model\Company;
 use Illuminate\Http\Request;
 
 class BranchController extends Controller
@@ -14,7 +15,8 @@ class BranchController extends Controller
      */
     public function index()
     {
-        //
+        $branchs=Branch::all();
+        return view('multiauth::admin.cpanel_forms.show_branch',compact('branchs'));
     }
 
     /**
@@ -24,7 +26,8 @@ class BranchController extends Controller
      */
     public function create()
     {
-        return view('multiauth::admin.cpanel_forms.create_branch');
+        $copmanies=Company::all();
+        return view('multiauth::admin.cpanel_forms.create_branch',compact('copmanies'));
     }
 
     /**
@@ -35,7 +38,39 @@ class BranchController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validatedData = $request->validate([
+            'name' => ['required', 'max:255'],
+            'adress' => ['required', 'max:255'],
+            'phone' => ['required'],
+            'email' => ['required','email'],
+            'short_intro' => ['required'],
+            'company_id'=> ['required'],
+          
+        ],
+        $messages = [
+            'name.required' => 'يجب ادخال اسم الفرع',
+            'address.required' => 'يجب ادخال اسم عنوان الفرع',
+            'phone.required' => 'يجب ادخال رقم الهاتف',
+            'email.required' => 'يجب ادخال البريد الاكتروني للفرع',
+            'short_intro.required' => 'يجب ادخال نبذه عن الفرع',
+        ]
+        );
+        $branch=new Branch();
+       
+        // $filename=$request->file('logo');
+       
+        if($file=$request->file('img')){
+           
+            $name=$file->getClientOriginalName();
+            $file->move('upload',$name);
+            $branch->img = 'upload/'.$name ;  
+           
+        }
+         $branch->fill($validatedData);
+        $save= $branch->save();
+        if( $save) {
+            return redirect('/show_branch')->with('success', 'تمت عمليه الإضافه بنجاح');
+        }
     }
 
     /**
@@ -46,7 +81,7 @@ class BranchController extends Controller
      */
     public function show(Branch $branch)
     {
-        return view('multiauth::admin.cpanel_forms.show_branch');
+      
     }
 
     /**
@@ -57,7 +92,8 @@ class BranchController extends Controller
      */
     public function edit(Branch $branch)
     {
-        //
+        $copmanies=Company::all();
+        return view('multiauth::admin.cpanel_forms.edit_branch',compact('branch','copmanies'));
     }
 
     /**
@@ -69,7 +105,10 @@ class BranchController extends Controller
      */
     public function update(Request $request, Branch $branch)
     {
-        //
+        $update=$branch->update($request->all());
+        if( $update){
+            return redirect('/show_branch')->with('success', 'تمت عمليه التعديل بنجاح');
+        }
     }
 
     /**
@@ -80,6 +119,9 @@ class BranchController extends Controller
      */
     public function destroy(Branch $branch)
     {
-        //
+        $dalate=$branch->delete();
+        if( $dalate){
+            return redirect('/show_branch')->with('success', 'تمت عمليه الحذف  بنجاح');
+        }
     }
 }
